@@ -22,17 +22,15 @@ GrayImageDirectory = fullfile(DataDirectory,'Gray Image');
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%SavedImageWidth = CroppedImageWidth/100;
-%SavedImageHeight = CroppedImageHeight/100;
 CropVector = [CroppedImageXPosition,CroppedImageYPosition,...
                     CroppedImageWidth,CroppedImageHeight];
 ImageSizeVector = [0,0,CroppedImageWidth,CroppedImageHeight];
 
-% find ratio between real and image dimension. 
+% 1. find ratio between real and image dimension. 
 [InletRowPosition,InletColumnPostion,InletImageDiameter] = ...
    findInletCenter(VideoToProcess,FirstFrameIndex,CropVector,DataDirectory);
 Ratio = InletImageDiameter/InletRadius;     % unit: pixel/cm
-% crop and save every frame
+% 2. crop and save every frame
 imageProcessIndex=1;
 for indexToProcessFrame = FirstFrameIndex:1:LastFrameIndex
     [imageGrayCrop,imageColorCrop] = cropImage(VideoToProcess,...
@@ -49,8 +47,7 @@ for indexToProcessFrame = FirstFrameIndex:1:LastFrameIndex
     imageProcessIndex = imageProcessIndex+1;
 end
 
-% save data useful for following process.
-
+% 3. save data useful for following process.
 output1 = {'Ratio(pixel/cm)','InletXPosition(pixel)','InletYPosition(pixel)',...
 'InletImageDiameter(pixel)','starting frame','ending frame','FrameRate(/s)'};
 output2 = [Ratio,InletRowPosition,InletColumnPostion,InletImageDiameter,...
