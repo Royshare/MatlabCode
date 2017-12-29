@@ -1,20 +1,20 @@
 % this function is used for finding inlet position in image.
 % By Rui Luo 2017/12/25
 function [rowCenter,columnCenter,inletImageRadius]=findInletCenter(video,...
-                                  FirstFrameIndex,cropVector,DataDirectory)
+                                  FirstFrameIndex,CropVector,DataDirectory)
 
 medianFilterThreshold = [15,15];
 pixelUpperLimit=100;
-cannyThreshold=[0.4,0.5];
-cannySigma=5;
-
-GreyImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
+cannyThreshold=[0.1,0.2];
+cannySigma= 3;
+ImageSizeVector = [0,0,CropVector(3),CropVector(4)];
+GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');
 
-imageColorOriginal = readframe(video,FirstFrameIndex-5);
+imageColorOriginal = read(video,FirstFrameIndex-5);
 imageGrayOrignial = rgb2gray(imageColorOriginal);
-imageColorCrop = imcrop(imageColorOrignial,cropVector);
-imageGrayCrop = imcrop(imageGrayOrignial,cropVector);
+imageColorCrop = imcrop(imageColorOriginal,CropVector);
+imageGrayCrop = imcrop(imageGrayOrignial,CropVector);
 imageMedianFiltered = medfilt2(imageGrayCrop,medianFilterThreshold);
 imageCannyEdgeDetected = edge(imageMedianFiltered,'canny',cannyThreshold,cannySigma);
 imageRemovedSmallObject = bwareaopen(imageCannyEdgeDetected,pixelUpperLimit);
@@ -24,17 +24,20 @@ columnCenter = mean(columnEdge);
 temp = (rowEdge-rowCenter).^2+(columnEdge-columnCenter).^2;
 inletImageRadius = mean(sqrt(temp));
 
-imshow(imageGrayCrop);
+imshow(imageGrayCrop,'border','tight','initialmagnification','fit');
 hold on
-plot(columnEdge,rowEdge,'b*','markersize',3)
-%set(gcf,'PaperUnits','inches','PaperPosition',SaveVector)
-fname = sprintf('finger_0g.png');
-GreyImageFullDirectory = fullfile(GreyImageWithEdgeDirectory,fname);
-%print('-dpng',GreyImageFullDirectory,'-r100'); 
-print('-dpng',GreyImageFullDirectory);
+plot(columnEdge,rowEdge,'b*','markersize',1)
+set(gcf,'PaperPosition',ImageSizeVector/100)
+
+fname = sprintf('0.png');
+GrayImageFullDirectory = fullfile(GrayImageWithEdgeDirectory,fname);
+print('-dpng',GrayImageFullDirectory,'-r100'); 
+
 hold off
-imshow(imageColorCrop);
-fname = sprintf('finger_0c.png');
+figure
+imshow(imageColorCrop,'border','tight','initialmagnification','fit');
+set(gcf,'PaperPosition',ImageSizeVector/100)
+fname = sprintf('0.png');
 ColorImageFullDirectory = fullfile(ColorImageDirectory,fname);
-print('-dpng',ColorImageFullDirectory);
+print('-dpng',ColorImageFullDirectory,'-r100');
 end
