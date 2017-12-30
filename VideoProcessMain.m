@@ -6,6 +6,7 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % target video should be stored in same folder of as where the code locates.
+phiInitial = 0.31;
 VideoToProcess = VideoReader('MVI_0548.MOV');   
 FirstFrameIndex = 311;
 LastFrameIndex = FirstFrameIndex+450;
@@ -17,10 +18,14 @@ CroppedImageHeight = 932;
 
 FrameRate = VideoToProcess.FrameRate;
 InletRadius= 5/32*2.54;   % unit: cm   
-DataDirectory = 'C:\Users\lr546\Desktop\phi31';
+DataDirectory = ['C:\Users\lr546\Desktop\phi',num2str(phiInitial*100)];
 GrayImageDirectory = fullfile(DataDirectory,'Gray Image');
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');
+% mkdir(DataDirectory)
+% mkdir(GrayImageDirectory)
+% mkdir(GrayImageWithEdgeDirectory)
+% mkdir(ColorImageDirectory)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CropVector = [CroppedImageXPosition,CroppedImageYPosition,...
                     CroppedImageWidth,CroppedImageHeight];
@@ -39,16 +44,16 @@ for indexToProcessFrame = FirstFrameIndex:1:LastFrameIndex
     imshow(imageGrayCrop,'border','tight','initialmagnification','fit');
     set(gcf,'PaperPosition',ImageSizeVector/100);
     imageGrayCropDirectory = fullfile(GrayImageDirectory,imageName);
-    print('-dpng',imageGrayCropDirectory);
+    print('-dpng',imageGrayCropDirectory,'-r100');
     imshow(imageColorCrop,'border','tight','initialmagnification','fit');
     imageColorCropDirectory = fullfile(ColorImageDirectory,imageName);
     set(gcf,'PaperPosition',ImageSizeVector/100);
-    print('-dpng',imageColorCropDirectory);
+    print('-dpng',imageColorCropDirectory,'-r100');
     imageProcessIndex = imageProcessIndex+1;
 end
 
 % 3. save data useful for following process.
-output1 = {'Ratio(pixel/cm)','InletXPosition(pixel)','InletYPosition(pixel)',...
+output1 = {'Ratio(pixel/cm)','InletRowPosition(pixel)','InletColumnPosition(pixel)',...
 'InletImageDiameter(pixel)','starting frame','ending frame','FrameRate(/s)'};
 output2 = [Ratio,InletRowPosition,InletColumnPostion,InletImageDiameter,...
                                   FirstFrameIndex,LastFrameIndex,FrameRate];
