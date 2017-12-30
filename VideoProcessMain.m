@@ -6,15 +6,14 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % target video should be stored in same folder of as where the code locates.
-phiInitial = 0.31;
-VideoToProcess = VideoReader('MVI_0548.MOV');   
-FirstFrameIndex = 311;
+phiInitial = 0.27;
+VideoToProcess = VideoReader('MVI_0643.MOV');   
+FirstFrameIndex = 207;
 LastFrameIndex = FirstFrameIndex+450;
-% LastFrameIndex = FirstFrameIndex+5;   % for test to decide first frame
-CroppedImageXPosition = 490;  
+CroppedImageXPosition = 450;  
 CroppedImageYPosition = 96; 
 CroppedImageWidth = 1160;    
-CroppedImageHeight = 932;
+CroppedImageHeight = 920;
 
 FrameRate = VideoToProcess.FrameRate;
 InletRadius= 5/32*2.54;   % unit: cm   
@@ -22,10 +21,10 @@ DataDirectory = ['C:\Users\lr546\Desktop\phi',num2str(phiInitial*100)];
 GrayImageDirectory = fullfile(DataDirectory,'Gray Image');
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');
-% mkdir(DataDirectory)
-% mkdir(GrayImageDirectory)
-% mkdir(GrayImageWithEdgeDirectory)
-% mkdir(ColorImageDirectory)
+mkdir(DataDirectory)
+mkdir(GrayImageDirectory)
+mkdir(GrayImageWithEdgeDirectory)
+mkdir(ColorImageDirectory)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CropVector = [CroppedImageXPosition,CroppedImageYPosition,...
                     CroppedImageWidth,CroppedImageHeight];
