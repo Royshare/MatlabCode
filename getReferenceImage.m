@@ -21,5 +21,6 @@ for indexRead = indexStartRead:1:indexEndRead
     imageReferenceCrop(:,:,:,indexRead) = imcrop(imageReferenceOriginal(:,:,:,indexRead),cropVector);
 end
 imageReferenceAverageValue = mean(double(imageReferenceCrop),4);
-
+imageReferenceAverageValue = uint8(imageReferenceAverageValue);
+imageReferenceAverageValue = rgb2gray(imageReferenceAverageValue);
 end

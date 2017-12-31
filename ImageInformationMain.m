@@ -5,24 +5,27 @@ clc
 close all
 
 % main functions' switch, '1' means 'on' while '0' means 'off'
-doCalculateRingAverageConcentration = 1;
+doCalculateRingAverageConcentration = 0;
 doCalculateShearViscosity = 1;
 doCalculateNormalViscosity = 0;
 doCalculateRingAverageShearViscosity = 1;
 doCalculateRingAverageNormalViscosity = 0;
-doFindClusterNumber = 0;
+doCalculateShearMobilityRatio = 1;
+doCalculateNormalMobilityRatio = 0;
+doFindCluster = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
-indexFrameToCal = [120];
+phiInitial = 0.22;
+indexFrameToCal = 30:15:450;
+
 medianFilterThreshold = [3,3];
 pixelUpperLimit=100;
 cannyThreshold=[0.4,0.5];
 cannySigma= sqrt(2);
 denom = 3;
-phiInitial = 0.31;
 ringWidth = 5;  % unit: pixel
-DataDirectory = 'C:\Users\lr546\Desktop\';
+DataDirectory = 'C:\Users\lr546\Desktop\large particle\';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 xlsDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\data.xls'];
 imageDirectory =[DataDirectory,'phi',num2str(phiInitial*100),'\Gray Image\'];
@@ -40,6 +43,7 @@ imageReferenceAverageValue = getReferenceImage(imageIntensity,DataDirectory,...
 % temp = uint8(imageReferenceAverageValue);
 % figure
 % imshow(temp)
+mobilityRatioMax = zeros(1,numTotalFrame);
 for mCal = 1:numTotalFrame
     imageCalDirectory = [imageDirectory,num2str(indexFrameToCal(mCal)),'.png'];
     imageIntensity = imread(imageCalDirectory);
@@ -49,23 +53,46 @@ for mCal = 1:numTotalFrame
 % 2. calculate concentration at each pixel.
     [concentrationCartesian,concentrationPolar,imageConcentration] = getPixelConcentration(imageIntensity,imageReferenceAverageValue,inletRowPosition,inletColumnPosition,phiInitial);
     
-% 3.1 calculate shear viscosity at each pixel.    
+% 3.1 calculate shear viscosity at each pixel.
+if doCalculateShearViscosity == 1
     [shearViscosityCartesian,shearViscosityPolar] = getShearViscosity(concentrationCartesian,concentrationPolar);
+end
 % 3.2 calculate normal viscosity at each pixel.
+if doCalculateNormalViscosity == 1
     [normalViscosityCartesian,normalViscosityPolar] = getNormalViscosity(concentrationCartesian,concentrationPolar);
+end
 % 4.1 calculate ring average shear viscosity.
+if doCalculateRingAverageShearViscosity == 1
     shearViscosityRingAverage = getRingAverageValue(shearViscosityPolar,ringWidth);
+end
 % 4.2 calculate ring average normal viscosity.
+if doCalculateRingAverageNormalViscosity == 1
     normalViscosityRingAverage = getRingAverageValue(normalViscosityPolar,ringWidth);
+end
 % 4.3 calculate ring average concentration.
+if doCalculateRingAverageConcentration == 1
     concentrationRingAverage = getRingAverageValue(concentrationPolar,ringWidth);
+end
 % 5. calculate mobility ratio
-    shearMobilityRatioRing = getMobilityRatio(shearViscosityRingAverage);
-    normalMobilityRatioRing = getMobilityRatio(normalViscosityRingAverage);
+if doCalculateShearMobilityRatio == 1
+    shearMobilityRatioRingAverage = getMobilityRatio(shearViscosityRingAverage);
+end
+mobilityRatioMax(mCal) = max(shearMobilityRatioRingAverage(:,2));
+
+if doCalculateNormalMobilityRatio == 1
+    normalMobilityRatioRingAverage = getMobilityRatio(normalViscosityRingAverage); 
+end
 % 6. find cluster number and calculate its area.
-    [imageCluster,numberCluster,areaCluster] = findCluster(imageIntensity,imageConcentration,phiInitial)
+if doFindCluster == 1
+    [imageCluster,numberCluster,areaCluster] = findCluster(imageIntensity,imageConcentration,phiInitial);
+end
 % 7. find cluster position.
 
 end
 
+mobilityRatioDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\mobility ratio.xls'];
+output1 = {'frame','maximum mobility ratio'};
+output2 = [indexFrameToCal',mobilityRatioMax'];
+xlswrite(mobilityRatioDirectory,output1,1,'A1');
+xlswrite(mobilityRatioDirectory,output2,1,'A2');
 

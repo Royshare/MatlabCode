@@ -6,9 +6,9 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % target video should be stored in same folder of as where the code locates.
-phiInitial = 0.27;
-VideoToProcess = VideoReader('MVI_0643.MOV');   
-FirstFrameIndex = 207;
+phiInitial = 0.22;
+VideoToProcess = VideoReader('MVI_0642.MOV');   
+FirstFrameIndex = 206;
 LastFrameIndex = FirstFrameIndex+450;
 CroppedImageXPosition = 450;  
 CroppedImageYPosition = 96; 
@@ -17,7 +17,7 @@ CroppedImageHeight = 920;
 
 FrameRate = VideoToProcess.FrameRate;
 InletRadius= 5/32*2.54;   % unit: cm   
-DataDirectory = ['C:\Users\lr546\Desktop\phi',num2str(phiInitial*100)];
+DataDirectory = ['C:\Users\lr546\Desktop\large particle\phi',num2str(phiInitial*100)];
 GrayImageDirectory = fullfile(DataDirectory,'Gray Image');
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');

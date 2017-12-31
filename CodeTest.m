@@ -80,7 +80,7 @@ phi=0.31;
 ratio=111.8493;
 center_x=469.7894;
 center_y=589.8303;
-imageIntensity=imread(fullfile('C:\Users\Rui\Desktop\phi31\test.png'));
+imageIntensity=imread(fullfile('C:\Users\lr546\Desktop\concentration\test3.png'));
 imageIntensity=rgb2gray(imageIntensity);
  figure
  imshow(imageIntensity)
@@ -88,21 +88,21 @@ imageIntensity=rgb2gray(imageIntensity);
 
 BW1 = imbinarize(imageIntensity);
 indexS=find(BW1<1);
-% imshow(BW1)
+ imshow(BW1)
 BW1 = ~BW1;
 BW2 = bwfill(BW1, 'holes');
-% figure 
-% imshow(BW2)
+ figure 
+imshow(BW2)
  index=find(BW1<1);
 
   imageProcess=imageIntensity;
   imageProcess(index)=255;
-%   figure
-%   imshow(imageProcess)
+   figure
+   imshow(imageProcess)
 
 image_ave = IntCrct(cropvec1);
-% figure
-% imshow(image_ave)
+ figure
+ imshow(image_ave)
 
 ref_corrected1 = double(imageIntensity)./double(image_ave);
 ref_corrected2 = uint8(ref_corrected1*180);

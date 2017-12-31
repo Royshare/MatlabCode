@@ -5,13 +5,13 @@ function [rowCenter,columnCenter,inletImageRadius]=findInletCenter(video,...
 
 medianFilterThreshold = [15,15];
 pixelUpperLimit=100;
-cannyThreshold=[0.1,0.2];
-cannySigma= 3;
+cannyThreshold=[0.6,0.7];
+cannySigma= 9;
 ImageSizeVector = [0,0,CropVector(3),CropVector(4)];
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');
 
-imageColorOriginal = read(video,FirstFrameIndex-5);
+imageColorOriginal = read(video,FirstFrameIndex);
 imageGrayOrignial = rgb2gray(imageColorOriginal);
 imageColorCrop = imcrop(imageColorOriginal,CropVector);
 imageGrayCrop = imcrop(imageGrayOrignial,CropVector);
