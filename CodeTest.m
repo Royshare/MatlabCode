@@ -1,5 +1,66 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Test image process.
+%% plot z-score rho
+clear
+clc
+close all
+ phiInitial = [0.11,0.20,0.23,0.24,0.25,0.27,0.29,0.31];
+% phiInitial = 0.31;
+indexMaximum = length(phiInitial);
+for plotIndex =1:indexMaximum
+color = char('b','r','k','g','m','c','y','b','r');
+DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.397gap\';
+interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial(plotIndex)*100),'\interface.xls'];
+rsDirectory = [DataDirectory,'phi',num2str(phiInitial(plotIndex)*100),'\rsPlot5-9.png'];
+[~,SheetName,~]=xlsfinfo(interfaceDirectory);
+for sheetIndex = 5:1:length(SheetName);
+      [rsData,~,~] = xlsread(interfaceDirectory,sheetIndex);
+      rsData([1,2],:)=[];
+      plot(rsData(:,1),rsData(:,3),color(sheetIndex))
+      hold on
+end
+hold off
+print('-dpng',rsDirectory,'-r100')
+end
+%% test calculate outer perimeter 
+clear
+clc
+close all
+inletRowPosition = 459.0964;
+inletColumnPosition = 601.386;
+imageIntensity=imread(fullfile('C:\Users\lr546\Desktop\325particle 1.397gap\phi27\Color Image\315.png'));
+[imageHeight,imageWidth,~] = size(imageIntensity); 
+imageIntensity=rgb2gray(imageIntensity);
+ figure
+ imshow(imageIntensity)
+
+BW1 = imbinarize(imageIntensity);
+figure
+imshow(BW1);
+imageInterface = bwperim(BW1);
+figure
+imshow(imageInterface)
+test = edge(BW1,'canny');
+figure
+imshow(test)
+test2 = bwareaopen(test,100);
+figure
+imshow(test2)
+kNum = 1;
+for rowNum=1:imageHeight
+    for columnNum=1:imageWidth
+        rowLocation(kNum)=(rowNum-inletRowPosition);  % unit: pixel
+        columnLocation(kNum)=(columnNum-inletColumnPosition);
+        interfaceVector(kNum)=imageInterface(rowNum,columnNum);
+        kNum=kNum+1;
+    end
+end
+[thetaLocation,rhoLocation]=cart2pol(columnLocation,rowLocation); 
+indexInterface = interfaceVector ==1;
+
+rhoInterfaceLocation = rhoLocation(indexInterface);
+thetaInterfaceLocation = thetaLocation(indexInterface);
+interfaceOuter = [rhoInterfaceLocation',thetaInterfaceLocation']
+
+%% Test image process.
 clear 
 clc
 close all

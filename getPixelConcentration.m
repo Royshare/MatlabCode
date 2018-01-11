@@ -42,8 +42,8 @@ imageLog(imageBinarySuspension) = 0;
 kNum=1;
 for rowNum=1:imageHeight+1
     for columnNum=1:imageWidth+1
-        distanceToCenter = sqrt((rowNum-inletRowPosition)^2...
-                        +(columnNum-inletColumnPosition)^2);
+        distanceToCenter = sqrt((rowNum-inletRowPosition)^2+...
+                           (columnNum-inletColumnPosition)^2);
         if distanceToCenter <= pixelUpperLimitDelete
             indexDelete(1,kNum)=rowNum;
             indexDelete(2,kNum)=columnNum;
