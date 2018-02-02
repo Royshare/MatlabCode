@@ -3,10 +3,10 @@
 function [rowCenter,columnCenter,inletImageRadius]=findInletCenter(video,...
                                   FirstFrameIndex,CropVector,DataDirectory)
 
-medianFilterThreshold = [15,15];
+medianFilterThreshold = [5,5];
 pixelUpperLimit=100;
-cannyThreshold=[0.6,0.7];
-cannySigma= 9;
+cannyThreshold=[0.7,0.8];
+cannySigma= 10;
 ImageSizeVector = [0,0,CropVector(3),CropVector(4)];
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');

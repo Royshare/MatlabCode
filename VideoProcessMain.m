@@ -6,25 +6,33 @@ close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % target video should be stored in same folder of as where the code locates.
-phiInitial = 0.22;
-VideoToProcess = VideoReader('MVI_0642.MOV');   
-FirstFrameIndex = 206;
-LastFrameIndex = FirstFrameIndex+450;
-CroppedImageXPosition = 450;  
-CroppedImageYPosition = 96; 
+particleSize = 125;  % unit: um
+gapThickness = 1.15; % unit: mm
+phiInitial = 0.20;
+VideoName = 'MVI_0594.MOV';
+FlowRate = 150;      % unit: ml/min
+
+FirstFrameIndex = 195;
+numberFrameProcess = 660;  % unit: frame
+CroppedImageXPosition = 510;  
+CroppedImageYPosition = 90; 
 CroppedImageWidth = 1160;    
 CroppedImageHeight = 920;
-
-FrameRate = VideoToProcess.FrameRate;
-InletRadius= 5/32*2.54;   % unit: cm   
-DataDirectory = ['C:\Users\lr546\Desktop\large particle\phi',num2str(phiInitial*100)];
+MainDirectory = 'C:\Users\lr546\Desktop\';
+DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
+      num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
 GrayImageDirectory = fullfile(DataDirectory,'Gray Image');
 GrayImageWithEdgeDirectory = fullfile(DataDirectory,'Gray Image with Edge');
 ColorImageDirectory = fullfile(DataDirectory,'Color Image');
+VideoDirectory = [DataDirectory,'\',VideoName];
 mkdir(DataDirectory)
 mkdir(GrayImageDirectory)
 mkdir(GrayImageWithEdgeDirectory)
 mkdir(ColorImageDirectory)
+VideoToProcess = VideoReader(VideoDirectory);
+LastFrameIndex = FirstFrameIndex+numberFrameProcess;
+FrameRate = VideoToProcess.FrameRate;
+InletRadius= 5/32*2.54;   % unit: cm   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CropVector = [CroppedImageXPosition,CroppedImageYPosition,...
                     CroppedImageWidth,CroppedImageHeight];

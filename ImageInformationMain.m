@@ -18,22 +18,20 @@ doCalculateOuterPerimeter = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
-phiInitial = 0.11;
-indexFrameToCal = [50,100,150,200,250,300,350,400,450];
+% phiInitialArray = [0.14,0.17,0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,0.3,0.31,0.32,0.33,0.34,0.35];
+phiInitialArray = [0.33];
+for informationGetIndex = 1:length(phiInitialArray)
+phiInitial = phiInitialArray(informationGetIndex);
+indexFrameToCal = 45:3:450;
 
-medianFilterThreshold = [3,3];
-pixelUpperLimit=100;
-cannyThreshold=[0.4,0.5];
-cannySigma= sqrt(2);
-denom = 3;
 ringWidth = 5;  % unit: pixel
-DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.397gap\';
+DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.27gap\';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-xlsDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\data.xls'];
+parameterDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\data.xls'];
 imageDirectory =[DataDirectory,'phi',num2str(phiInitial*100),'\Gray Image\'];
-Ratio = xlsread(xlsDirectory,1,'A2'); % unit: pixel/cm
-inletRowPosition = xlsread(xlsDirectory,1,'B2');
-inletColumnPosition = xlsread(xlsDirectory,1,'C2');
+Ratio = xlsread(parameterDirectory,1,'A2'); % unit: pixel/cm
+inletRowPosition = xlsread(parameterDirectory,1,'B2');
+inletColumnPosition = xlsread(parameterDirectory,1,'C2');
 [~,numTotalFrame]=size(indexFrameToCal);
 
 
@@ -47,8 +45,8 @@ if doCalculatePixelConcentration == 1
       % figure
       % imshow(temp)
 end
-mobilityRatioMax = zeros(1,numTotalFrame);
 shearMobilityRatioMax = zeros(1,numTotalFrame);
+shearMobilityRatioMaxLocation = zeros(1,numTotalFrame);
 shearViscosityContrastMax = zeros(1,numTotalFrame);
 numberCluster = zeros(1,numTotalFrame);
 for mCal = 1:numTotalFrame
@@ -84,7 +82,8 @@ end
 % 5. calculate mobility ratio
 if doCalculateShearMobilityRatio == 1
     shearMobilityRatioRingAverage = getMobilityRatio(shearViscosityRingAverage);
-    shearMobilityRatioMax(mCal) = max(shearMobilityRatioRingAverage(:,2));
+    [shearMobilityRatioMax(mCal),shearMobilityRatioMaxIndex] = max(shearMobilityRatioRingAverage(:,2));
+    shearMobilityRatioMaxLocation(mCal) = shearMobilityRatioRingAverage(shearMobilityRatioMaxIndex,1);
 end
 
 if doCalculateNormalMobilityRatio == 1
@@ -105,7 +104,7 @@ end
 % 7. find outer perimeter.
 if doCalculateOuterPerimeter == 1
     interfaceOuter = getOuterInterfacePosition(imageIntensity,inletRowPosition,inletColumnPosition);
-    interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\interface.xls'];
+    interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\interface1.xls'];
     sheetName=['Sheet',num2str(mCal)];
     output1 = {'frame',num2str(indexFrameToCal(mCal))};
     output2 = {'theta','rho'};
@@ -117,21 +116,21 @@ if doCalculateOuterPerimeter == 1
 end
       
 end
+if doCalculateShearMobilityRatio == 1
+      tempSmoothed = smooth(shearMobilityRatioMax);
+      mobilityRatioDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\mobility ratio.xls'];
+      output1 = {'frame','maximum mobility ratio','location/pixel','maximum mobility ratio cleaned'};
+      output2 = [indexFrameToCal',shearMobilityRatioMax',shearMobilityRatioMaxLocation',tempSmoothed];
+      xlswrite(mobilityRatioDirectory,output1,1,'A1');
+      xlswrite(mobilityRatioDirectory,output2,1,'A2');
+end
 
-% mobilityRatioDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\mobility ratio.xls'];
-% output1 = {'frame','maximum mobility ratio'};
-% output2 = [indexFrameToCal',mobilityRatioMax'];
-% xlswrite(mobilityRatioDirectory,output1,1,'A1');
-% xlswrite(mobilityRatioDirectory,output2,1,'A2');
-
-% shearViscosityContrastDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\viscosity contrast.xls'];
-% output1 = {'frame','maximum mobility ratio'};
-% output2 = [indexFrameToCal',shearViscosityContrastMax'];
-% xlswrite(shearViscosityContrastDirectory,output1,1,'A1');
-% xlswrite(shearViscosityContrastDirectory,output2,1,'A2');
-
-% clusterNumberDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\cluster number.xls'];
-% output1 = {'frame','cluster number'};
-% output2 = [indexFrameToCal',numberCluster'];
-% xlswrite(clusterNumberDirectory,output1,1,'A1');
-% xlswrite(clusterNumberDirectory,output2,1,'A2');
+% Save cluster number result data.
+if doFindCluster == 1
+      clusterNumberDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\cluster number.xls'];
+      output1 = {'frame','cluster number'};
+      output2 = [indexFrameToCal',numberCluster'];
+      xlswrite(clusterNumberDirectory,output1,1,'A1');
+      xlswrite(clusterNumberDirectory,output2,1,'A2');
+end
+end 

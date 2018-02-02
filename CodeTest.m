@@ -1,3 +1,153 @@
+%% using hausdorff distance to determine similarity between curve
+clear
+clc
+close all
+thetaInterpolation = linspace(-3.13,3.13,1800);
+particleSize = 125;  % unit: um
+gapThickness = 1.27; % unit: mm
+phiInitial = 0.35;
+MainDirectory = 'C:\Users\lr546\Desktop\';
+DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
+      num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
+InterfaceDirectory = [DataDirectory,'\interface1.xls'];
+[~,sheetName] = xlsfinfo(InterfaceDirectory);
+[~,sheetNumber] = size(sheetName);
+comparisonMax = sheetNumber-1;
+hd = zeros(1,comparisonMax);
+for comparisonIndex = comparisonMax:-1:70
+      interfaceSheetFinal = xlsread(InterfaceDirectory,sheetNumber);
+      interfaceSheetFinal(1:2,:) = [];
+      interfaceFinalSmooth = smooth(interfaceSheetFinal(:,3));
+      interfaceFinal = interp1(interfaceSheetFinal(:,1),interfaceFinalSmooth,thetaInterpolation);
+%       interfaceFinal = interp1(interfaceSheetFinal(:,1),interfaceSheetFinal(:,3),thetaInterpolation);
+      sample1 = [thetaInterpolation',interfaceFinal'];
+%       interfaceFinal = [interfaceSheetFinal(:,1)',interfaceSheetFinal(:,3)'];
+      interfaceSheetCompare = xlsread(InterfaceDirectory,comparisonIndex);
+      interfaceSheetCompare(1:2,:)=[];
+      interfaceCompareSmooth = smooth(interfaceSheetCompare(:,3));
+      interfaceCompare = interp1(interfaceSheetCompare(:,1),interfaceCompareSmooth,thetaInterpolation);
+%       interfaceCompare = interp1(interfaceSheetCompare(:,1),interfaceSheetCompare(:,3),thetaInterpolation);
+      sample2 = [thetaInterpolation',interfaceCompare'];
+      %       interfaceCompared = [interfaceSheetCompare(:,1)',interfaceSheetFinal(:,3)'];
+      [hd(comparisonIndex),csq] = HausdorffDist(sample1,sample2);
+      figure;plot(thetaInterpolation,interfaceFinal)
+      hold on
+      plot(thetaInterpolation,interfaceCompare)
+end
+%% USING Frechet Distance to determine similarity between curve
+clear
+clc
+close all
+thetaInterpolation = linspace(-3.13,3.13,1800);
+particleSize = 125;  % unit: um
+gapThickness = 1.27; % unit: mm
+phiInitial = 0.35;
+MainDirectory = 'C:\Users\lr546\Desktop\';
+DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
+      num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
+InterfaceDirectory = [DataDirectory,'\interface1.xls'];
+[~,sheetName] = xlsfinfo(InterfaceDirectory);
+[~,sheetNumber] = size(sheetName);
+comparisonMax = sheetNumber-1;
+hd = zeros(1,comparisonMax);
+for comparisonIndex = comparisonMax:-1:70
+      interfaceSheetFinal = xlsread(InterfaceDirectory,sheetNumber);
+      interfaceSheetFinal(1:2,:) = [];
+      interfaceFinalSmooth = smooth(interfaceSheetFinal(:,3));
+      interfaceFinal = interp1(interfaceSheetFinal(:,1),interfaceFinalSmooth,thetaInterpolation);
+%       interfaceFinal = interp1(interfaceSheetFinal(:,1),interfaceSheetFinal(:,3),thetaInterpolation);
+      sample1 = [thetaInterpolation',interfaceFinal'];
+%       interfaceFinal = [interfaceSheetFinal(:,1)',interfaceSheetFinal(:,3)'];
+      interfaceSheetCompare = xlsread(InterfaceDirectory,comparisonIndex);
+      interfaceSheetCompare(1:2,:)=[];
+      interfaceCompareSmooth = smooth(interfaceSheetCompare(:,3));
+      interfaceCompare = interp1(interfaceSheetCompare(:,1),interfaceCompareSmooth,thetaInterpolation);
+%       interfaceCompare = interp1(interfaceSheetCompare(:,1),interfaceSheetCompare(:,3),thetaInterpolation);
+      sample2 = [thetaInterpolation',interfaceCompare'];
+      %       interfaceCompared = [interfaceSheetCompare(:,1)',interfaceSheetFinal(:,3)'];
+      [hd(comparisonIndex),csq] = DiscreteFrechetDist(sample1,sample2);
+      figure;plot(thetaInterpolation,interfaceFinal)
+      hold on
+      plot(thetaInterpolation,interfaceCompare)
+end
+
+%% test Frechet Distance
+clear
+clc
+close all
+
+t = 0:pi/8:2*pi;
+y = linspace(1,3,6);
+P = [(2:7)' y']+0.3.*randn(6,2);
+Q = [t' sin(t')]+2+0.3.*randn(length(t),2);
+P1 = [1,1;2,2;3,3;4,4;5,5];
+Q1 = [1,2;2,3;3,4;4,5;5,6];
+[hd, cSq] = DiscreteFrechetDist(P,Q);
+% plot result
+figure
+plot(Q1(:,1),Q1(:,2),'o-r','linewidth',3,'markerfacecolor','r')
+hold on
+plot(P1(:,1),P1(:,2),'o-b','linewidth',3,'markerfacecolor','b')
+title(['Discrete Frechet Distance of curves P and Q: ' num2str(hd)])
+legend('Q','P','location','best')
+line([2 hd+2],[0.5 0.5],'color','m','linewidth',2)
+text(2,0.4,'dFD length')
+for i=1:length(cSq)
+  line([P1(cSq(i,1),1) Q1(cSq(i,2),1)],...
+       [P1(cSq(i,1),2) Q1(cSq(i,2),2)],...
+       'color',[0 0 0]+(i/length(cSq)/1.35));
+end
+axis equal
+% display the coupling sequence along with each distance between points
+disp([cSq sqrt(sum((P1(cSq(:,1),:) - Q1(cSq(:,2),:)).^2,2))])
+%% test deformation
+clear
+clc
+close all
+
+phiInitial = 0.31;
+DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.397gap\';
+interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\interface.xls'];
+sheetIndex = 15;
+interfaceDataFrame = xlsread(interfaceDirectory,sheetIndex);
+interfaceDataFrame([1,2],:) = [];
+interfaceTheta = interfaceDataFrame(:,1);
+rho = interfaceDataFrame(:,2);
+interface = interfaceDataFrame(:,3);
+ figure;plot(interfaceTheta,interface)
+ figure;plot(interfaceTheta,rho)
+
+% interface1 = smooth(interface);
+interface2 = smooth(interface,'lowess');
+figure;plot(interfaceTheta,interface2)
+interface2 = smooth(interface2,'lowess');
+figure;plot(interfaceTheta,interface2)
+
+% interface3 = smooth(interface,'loess');
+% interface4 = smooth(interface,'sgolay');
+% interface5 = smooth(interface,'rlowess');
+% interface6 = smooth(interface,'rloess');
+
+% figure;plot(interfaceTheta,interface1)
+
+% figure;plot(interfaceTheta,interface3)
+% figure;plot(interfaceTheta,interface4)
+% figure;plot(interfaceTheta,interface5)
+% figure;plot(interfaceTheta,interface6)
+
+interfacem = medfilt1(interface2,10);
+figure;plot(interfaceTheta,interfacem)
+interfacem = medfilt1(interfacem,5);
+figure;plot(interfaceTheta,interfacem)
+test = 3-interfacem;
+figure;plot(interfaceTheta,test)
+[PKS,LOCS]= findpeaks(test);
+interfaceTheta(LOCS)
+%% test smooth function use
+clear
+clc
+close all
+
 %% plot z-score rho
 clear
 clc

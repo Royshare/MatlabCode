@@ -1,7 +1,8 @@
 % this function is used for get concentration information from gray image.
 % By Rui Luo 2017/12/27
 function [concentrationCartesian,concentrationPolar,imageConcentration] = getPixelConcentration(imageIntensity,imageReferenceAverageValue,inletRowPosition,inletColumnPosition,phiInitial)
-pixelUpperLimitDelete = 40;
+pixelUpperLimitDelete = 40; % image inside this circle will be removed.
+pixelLowerLimitDelete = 440;
 [imageHeight,imageWidth,~] = size(imageIntensity); 
 
 imageGrayIntensity = rgb2gray(imageIntensity);
@@ -40,11 +41,11 @@ imageLog=log(imageLog/intensityMinimum);
 imageLog(imageBinarySuspension) = 0;
 % delete data near inlet.
 kNum=1;
-for rowNum=1:imageHeight+1
-    for columnNum=1:imageWidth+1
+for rowNum=1:imageHeight
+    for columnNum=1:imageWidth
         distanceToCenter = sqrt((rowNum-inletRowPosition)^2+...
                            (columnNum-inletColumnPosition)^2);
-        if distanceToCenter <= pixelUpperLimitDelete
+        if distanceToCenter <= pixelUpperLimitDelete || distanceToCenter > pixelLowerLimitDelete
             indexDelete(1,kNum)=rowNum;
             indexDelete(2,kNum)=columnNum;
             kNum=kNum+1;
@@ -54,6 +55,7 @@ end
 indexRowDelete=indexDelete(1,:);
 indexColumnDelete=indexDelete(2,:);
 indexDeleteArea=sub2ind(size(imageLog),indexRowDelete,indexColumnDelete);
+
 imageLog(indexDeleteArea)=0;
 % temp = imageGrayIntensity;
 % temp(indexDeleteArea) = 255;
