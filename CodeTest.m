@@ -1,3 +1,16 @@
+%% test output csv
+clear
+clc
+close all
+output2 = {'theta','rho','rho_nomalized'};
+output3 = [1,23,23;2,34,34];
+output = array2table(output3,'VariableNames',{'theta','rho','rho_nomalized'});
+fileName = 'test.csv';
+writetable(output,fileName);
+% fid = fopen(fileName,'w');
+% fprintf(fid,'%s,%s,%s\n',output2{:});
+% dlmwrite(fileName,output,',',1,0);
+% fclose(fid);
 %% using hausdorff distance to determine similarity between curve
 clear
 clc

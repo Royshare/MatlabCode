@@ -61,7 +61,6 @@ imageEdge = edge(BWfinal,'canny');
 
       rhoInterfaceLocation = rhoLocation(indexInterface);
       thetaInterfaceLocation = thetaLocation(indexInterface);
-      rhoNormalized = zscore(rhoInterfaceLocation);
-      interfaceOuter = [thetaInterfaceLocation',rhoInterfaceLocation',rhoNormalized'];
+      interfaceOuter = [thetaInterfaceLocation',rhoInterfaceLocation'];
       interfaceOuter = sortrows(interfaceOuter,1);
 end

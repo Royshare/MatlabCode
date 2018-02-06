@@ -7,14 +7,14 @@ close all
 % variables to define.
 % target video should be stored in same folder of as where the code locates.
 particleSize = 125;  % unit: um
-gapThickness = 1.15; % unit: mm
-phiInitial = 0.20;
-VideoName = 'MVI_0594.MOV';
+gapThickness = 1.397; % unit: mm
+phiInitial = 0.36;
+VideoName = 'MVI_0499.MOV';
 FlowRate = 150;      % unit: ml/min
 
-FirstFrameIndex = 195;
-numberFrameProcess = 660;  % unit: frame
-CroppedImageXPosition = 510;  
+FirstFrameIndex = 289;
+numberFrameProcess = 600;  % unit: frame
+CroppedImageXPosition = 440;  
 CroppedImageYPosition = 90; 
 CroppedImageWidth = 1160;    
 CroppedImageHeight = 920;

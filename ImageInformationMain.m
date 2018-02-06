@@ -19,10 +19,10 @@ doCalculateOuterPerimeter = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % phiInitialArray = [0.14,0.17,0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,0.3,0.31,0.32,0.33,0.34,0.35];
-phiInitialArray = [0.33];
+phiInitialArray = linspace(0.22,0.35,14);
 for informationGetIndex = 1:length(phiInitialArray)
 phiInitial = phiInitialArray(informationGetIndex);
-indexFrameToCal = 45:3:450;
+indexFrameToCal = 30:1:690;
 
 ringWidth = 5;  % unit: pixel
 DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.27gap\';
@@ -104,14 +104,19 @@ end
 % 7. find outer perimeter.
 if doCalculateOuterPerimeter == 1
     interfaceOuter = getOuterInterfacePosition(imageIntensity,inletRowPosition,inletColumnPosition);
-    interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\interface1.xls'];
-    sheetName=['Sheet',num2str(mCal)];
-    output1 = {'frame',num2str(indexFrameToCal(mCal))};
-    output2 = {'theta','rho'};
-    output3 = interfaceOuter;
-    xlswrite(interfaceDirectory,output1,sheetName,'A1');
-    xlswrite(interfaceDirectory,output2,sheetName,'A2');
-    xlswrite(interfaceDirectory,output3,sheetName,'A3');
+%     interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\interface all.xls'];
+    interfaceDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\interface data'];
+    mkdir(interfaceDirectory);
+    interfaceFileName = [interfaceDirectory,'\',num2str(indexFrameToCal(mCal)),'.csv'];
+    output = array2table(interfaceOuter,'VariableNames',{'theta','rho'});
+    writetable(output,interfaceFileName)
+%     sheetName=['Sheet',num2str(mCal)];
+%     output1 = {'frame',num2str(indexFrameToCal(mCal))};
+%     output2 = {'theta','rho'};
+%     output3 = interfaceOuter;
+%     xlswrite(interfaceDirectory,output1,sheetName,'A1');
+%     xlswrite(interfaceDirectory,output2,sheetName,'A2');
+%     xlswrite(interfaceDirectory,output3,sheetName,'A3');
     
 end
       
