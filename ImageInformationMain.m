@@ -19,13 +19,13 @@ doCalculateOuterPerimeter = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % phiInitialArray = [0.14,0.17,0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,0.3,0.31,0.32,0.33,0.34,0.35];
-phiInitialArray = linspace(0.22,0.35,14);
+phiInitialArray = linspace(0.22,0.36,15);
 for informationGetIndex = 1:length(phiInitialArray)
 phiInitial = phiInitialArray(informationGetIndex);
-indexFrameToCal = 30:1:690;
+indexFrameToCal = 30:1:600;
 
 ringWidth = 5;  % unit: pixel
-DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.27gap\';
+DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.397gap\';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parameterDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\data.xls'];
 imageDirectory =[DataDirectory,'phi',num2str(phiInitial*100),'\Gray Image\'];
