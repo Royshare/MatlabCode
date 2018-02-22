@@ -1,3 +1,156 @@
+%% 
+clear
+clc
+close all
+
+nx=1000;xmin=-15;xmax=15;
+ny=1000;ymin=-15;ymax=15;
+[x,y]=meshgrid(linspace(xmin,xmax,nx),linspace(ymin,ymax,ny));
+a = 3; h = 1;
+Q = 10;
+potentialfun = Q/4/pi*log((x.^2-a^2-h^2-y.^2+2*h*y)^2+4*x.^2*(y-h)^2);
+levmax=max(max(potentialfun));
+levmin=min(min(potentialfun));
+lev=linspace(levmin,levmax,100);
+figure;
+contour(x,y,potentialfun,lev)
+title('Equipotential line of two source');
+
+streamfun = Q/2/pi*atan2(2*x.*(y-h),(x.^2-a^2-h^2-y^2+2*h*y));
+lev1max=max(max(streamfun));
+lev1min=min(min(streamfun));
+lev1=linspace(lev1min,lev1max,100);
+figure;
+contour(x,y,streamfun,lev1)
+title('Steamline of two source');
+
+
+%% find interface inside
+clear
+clc
+close all
+particleSize = 125;  % unit: um
+gapThickness = 1.397; % unit: mm
+phiInitial = 0.31;
+FlowRate = 150;      % unit: ml/min
+pixelUpperLimitDelete = 40; % image inside this circle will be removed.
+pixelLowerLimitDelete = 440;
+
+MainDirectory = 'C:\Users\lr546\Desktop\';
+DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
+      num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
+parameterDirectory = [DataDirectory,'\data.xls'];
+imageDirectory =[DataDirectory,'\Gray Image\'];
+Ratio = xlsread(parameterDirectory,1,'A2'); % unit: pixel/cm
+inletRowPosition = xlsread(parameterDirectory,1,'B2');
+inletColumnPosition = xlsread(parameterDirectory,1,'C2');
+
+timeFrame = [450];
+indexTotal = length(timeFrame);
+for indexAnalysis = 1:length(timeFrame)
+imageCalDirectory = [imageDirectory,num2str(timeFrame(indexAnalysis)),'.png'];
+imageIntensity = imread(imageCalDirectory);
+
+[imageHeight,imageWidth,~] = size(imageIntensity); 
+imageGrayIntensity = rgb2gray(imageIntensity);
+imageAnalysis = ezsmoothn(double(imageGrayIntensity));
+
+
+image1 = imageAnalysis;
+[fx,fy] = gradient(image1);
+
+   binaryThreshold = graythresh(image1);
+   imageClusterBinary = imbinarize(image1,binaryThreshold);
+   figure
+   imshow(imageClusterBinary)
+
+imageOut = edge(image1,'canny');
+figure; imshow(imageOut)
+figure;imshow(fx)
+figure;imshow(fy)
+end
+%% test perimeter of interface
+clear
+clc
+close all
+
+
+MainDirectory = 'C:\Users\lr546\Desktop\';
+phiInitialArray = [0.17,0.2,0.25,0.28,0.31];
+for informationGetIndex = 1:length(phiInitialArray)
+      particleSize = 125;  % unit: um
+      gapThickness = 1.397; % unit: mm
+      phiInitial = phiInitialArray(informationGetIndex);
+      FlowRate = 150;      % unit: ml/min
+      timeFrame = linspace(30,600,571);
+      % timeFrame = linspace(6,20,15).^2;
+      DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
+      num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
+      interfaceDirectory = [DataDirectory,'\interface data'];
+      parameterDirectory = [DataDirectory,'\data.xls'];
+      ratio = xlsread(parameterDirectory,1,'A2')-3.7; % unit: pixel/cm
+
+      indexTotal = length(timeFrame);
+      s = zeros(1,indexTotal);
+for indexAnalysis = 1:indexTotal
+    fileDirectory = [interfaceDirectory,'\',num2str(timeFrame(indexAnalysis)),'.csv'];
+    interface = csvread(fileDirectory,1,0);
+    theta = interface(:,1);
+    rho = interface(:,2);
+    theta1 = theta;
+    theta1(1,:) = [];
+    rho1 = rho;
+    rho1(1,:) = [];
+    pointNumber = length(theta);
+    theta(pointNumber) = [];
+    rho(pointNumber) = []; 
+    radiusCircle1 = ratio*sqrt(FlowRate/60 * timeFrame(indexAnalysis)/30/pi/(gapThickness/10));
+    s(indexAnalysis) = sum(abs((theta-theta1).*(rho+rho1)/2));
+    s1 = s;
+    s2 = s;
+    s1(:,1) = [];
+    s2(:,indexTotal) = [];
+    sdiff = s2./s1;
+    rhoMean(indexAnalysis) = mean(rho1);
+end
+time = timeFrame;
+time(:,indexTotal) = [];
+% semilogx(time,sdiff,'-*')
+% plot(sqrt(timeFrame),rhoMean);
+loglog(timeFrame,s)
+hold on
+end
+hold off
+%% test smooth setting
+clear
+clc
+close all
+
+particleSize = 125;  % unit: um
+gapThickness = 1.397; % unit: mm
+phiInitial = 0.17;
+FlowRate = 150;      % unit: ml/min
+MainDirectory = 'C:\Users\lr546\Desktop\';
+
+
+DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
+      num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
+interfaceDirectory = [DataDirectory,'\interface data'];
+parameterDirectory = [DataDirectory,'\data.xls'];
+% ratio = xlsread(parameterDirectory,1,'A2')-3.6; % unit: pixel/cm
+% timeFrame = linspace(30,600,571);
+timeFrame = 400;
+
+fileDirectory = [interfaceDirectory,'\',num2str(timeFrame),'.csv'];
+      interface1 = csvread(fileDirectory,1,0);
+theta1 = interface1(:,1);
+rho1 = interface1(:,2);
+rho1S = smooth(rho1,'sgolay');
+rho1S = smooth(rho1S,'sgolay');
+rho1Sm = ezsmoothn(rho1);
+      figure;plot(theta1,rho1)
+      figure;plot(theta1,rho1S)
+      figure;plot(theta1,rho1Sm)
 %% test output csv
 clear
 clc
@@ -15,29 +168,29 @@ writetable(output,fileName);
 clear
 clc
 close all
-thetaInterpolation = linspace(-3.13,3.13,1800);
+
 particleSize = 125;  % unit: um
-gapThickness = 1.27; % unit: mm
-phiInitial = 0.35;
+gapThickness = 1.397; % unit: mm
+phiInitial = 0.17;
 MainDirectory = 'C:\Users\lr546\Desktop\';
 DataDirectory = [MainDirectory,num2str(particleSize),'particle ',...
       num2str(gapThickness),'gap\phi',num2str(phiInitial*100)];
 InterfaceDirectory = [DataDirectory,'\interface1.xls'];
-[~,sheetName] = xlsfinfo(InterfaceDirectory);
-[~,sheetNumber] = size(sheetName);
+
 comparisonMax = sheetNumber-1;
 hd = zeros(1,comparisonMax);
-for comparisonIndex = comparisonMax:-1:70
+for indexAnalysis = 1:indexTotal-1
+      fileDirectory = [interfaceDirectory,'\',num2str(timeFrame),'.csv'];
       interfaceSheetFinal = xlsread(InterfaceDirectory,sheetNumber);
       interfaceSheetFinal(1:2,:) = [];
-      interfaceFinalSmooth = smooth(interfaceSheetFinal(:,3));
+      interfaceFinalSmooth = ezsmoothn(interfaceSheetFinal(:,3));
       interfaceFinal = interp1(interfaceSheetFinal(:,1),interfaceFinalSmooth,thetaInterpolation);
 %       interfaceFinal = interp1(interfaceSheetFinal(:,1),interfaceSheetFinal(:,3),thetaInterpolation);
       sample1 = [thetaInterpolation',interfaceFinal'];
 %       interfaceFinal = [interfaceSheetFinal(:,1)',interfaceSheetFinal(:,3)'];
       interfaceSheetCompare = xlsread(InterfaceDirectory,comparisonIndex);
       interfaceSheetCompare(1:2,:)=[];
-      interfaceCompareSmooth = smooth(interfaceSheetCompare(:,3));
+      interfaceCompareSmooth = ezsmoothn(interfaceSheetCompare(:,3));
       interfaceCompare = interp1(interfaceSheetCompare(:,1),interfaceCompareSmooth,thetaInterpolation);
 %       interfaceCompare = interp1(interfaceSheetCompare(:,1),interfaceSheetCompare(:,3),thetaInterpolation);
       sample2 = [thetaInterpolation',interfaceCompare'];
@@ -350,8 +503,8 @@ for iNum=1:933
 end
 indxi=index1(1,:);
 indxj=index1(2,:);
-indexCal=sub2ind(size(imageCal),indxi,indxj);
-imageCal(indexCal)=0;
+indexAnalysis=sub2ind(size(imageCal),indxi,indxj);
+imageCal(indexAnalysis)=0;
 indexTemp=find(imageCal ~= 0);
 imageCaltemp=zeros(size(imageCal));
 imageCaltemp(indexTemp)=1;
@@ -360,7 +513,7 @@ pixelArea=(1*0.0254/ratio)^2;
 k=phi*areaTemp/sum(sum(imageCal(:)))
 imageCon=k*imageCal;
 
-ref_corrected2(indexCal)=255;
+ref_corrected2(indexAnalysis)=255;
 figure
 imshow(ref_corrected2)
 
