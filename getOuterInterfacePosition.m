@@ -38,10 +38,10 @@ BWfinal = imerode(BWnobord,seD);
 BWfinal = bwareaopen(BWfinal,300);
 % BWoutline = bwperim(BWfinal);
 imageEdge = edge(BWfinal,'canny');
-% figure, imshow(imageEdge);
-% Segout = imageIntensity; 
-% Segout(imageEdge) = 255; 
-% figure, imshow(Segout), title('outlined original image');
+figure, imshow(imageEdge);
+Segout = imageIntensity; 
+Segout(imageEdge) = 255; 
+figure, imshow(Segout), title('outlined original image');
 
 
       kNum = 1;

@@ -34,8 +34,7 @@ GrayImageFullDirectory = fullfile(GrayImageWithEdgeDirectory,fname);
 print('-dpng',GrayImageFullDirectory,'-r100'); 
 
 hold off
-figure
-imshow(imageColorCrop,'border','tight','initialmagnification','fit');
+figure;imshow(imageColorCrop,'border','tight','initialmagnification','fit');
 set(gcf,'PaperPosition',ImageSizeVector/100)
 fname = sprintf('0.png');
 ColorImageFullDirectory = fullfile(ColorImageDirectory,fname);

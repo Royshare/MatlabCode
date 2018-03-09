@@ -3,9 +3,11 @@
 function [concentrationCartesian,concentrationPolar,imageConcentration] = getPixelConcentration(imageIntensity,imageReferenceAverageValue,inletRowPosition,inletColumnPosition,phiInitial)
 pixelUpperLimitDelete = 40; % image inside this circle will be removed.
 pixelLowerLimitDelete = 440;
+
 [imageHeight,imageWidth,~] = size(imageIntensity); 
 
 imageGrayIntensity = rgb2gray(imageIntensity);
+
 imageBinarySuspension = imbinarize(imageGrayIntensity);
 
 imageGrayIntensity(imageBinarySuspension) = 255;
