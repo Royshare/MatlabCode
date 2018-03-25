@@ -5,7 +5,7 @@ clc
 close all
 
 % main functions' switch, '1' means 'on' while '0' means 'off'
-doCalculatePixelConcentration = 0;
+doCalculatePixelConcentration = 1;
 doCalculateRingAverageConcentration = 0;
 doCalculateShearViscosity = 0;
 doCalculateNormalViscosity = 0;
@@ -13,17 +13,17 @@ doCalculateRingAverageShearViscosity = 0;
 doCalculateRingAverageNormalViscosity = 0;
 doCalculateShearMobilityRatio = 0;
 doCalculateNormalMobilityRatio = 0;
-doFindCluster = 0;
-doCalculateOuterPerimeter = 1; 
+doFindCluster = 1;
+doCalculateOuterPerimeter = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % variables to define.
 % phiInitialArray = [0.14,0.17,0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,0.3,0.31,0.32,0.33,0.34,0.35];
-phiInitialArray = linspace(0.22,0.36,15);
+phiInitialArray = [0.14];
 for informationGetIndex = 1:length(phiInitialArray)
 phiInitial = phiInitialArray(informationGetIndex);
-indexFrameToCal = 30:1:600;
-
+% indexFrameToCal = linspace(30,600,20);
+indexFrameToCal = [600];
 ringWidth = 5;  % unit: pixel
 DataDirectory = 'C:\Users\lr546\Desktop\125particle 1.397gap\';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,7 +58,10 @@ for mCal = 1:numTotalFrame
 % 2. calculate concentration at each pixel.
 if doCalculatePixelConcentration == 1
     [concentrationCartesian,concentrationPolar,imageConcentration] = getPixelConcentration(imageIntensity,imageReferenceAverageValue,inletRowPosition,inletColumnPosition,phiInitial);
-end    
+end
+
+% imageConcentrationSmoothed = ezsmoothn(imageConcentration);
+% figure;plot3(linspace(50,850,100),linspace(50,850,100),imageConcentration);
 % 3.1 calculate shear viscosity at each pixel.
 if doCalculateShearViscosity == 1
     [shearViscosityCartesian,shearViscosityPolar] = getShearViscosity(concentrationCartesian,concentrationPolar);
@@ -98,8 +101,8 @@ end
 if doFindCluster == 1
     [imageCluster,numberCluster,areaCluster] = findCluster(imageIntensity,imageConcentration,phiInitial);
 %      set(gcf,'PaperPosition',ImageSizeVector/100);
-    ClusterImageFullDirectory = [ClusterImageDirectory,'\',num2str(indexFrameToCal(mCal)),'.png'];
-    print('-dpng',ClusterImageFullDirectory,'-r100');
+%     ClusterImageFullDirectory = [ClusterImageDirectory,'\',num2str(indexFrameToCal(mCal)),'.png'];
+%     print('-dpng',ClusterImageFullDirectory,'-r100');
 end
 % 7. find outer perimeter.
 if doCalculateOuterPerimeter == 1
@@ -131,11 +134,13 @@ if doCalculateShearMobilityRatio == 1
 end
 
 % Save cluster number result data.
-if doFindCluster == 1
-      clusterNumberDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\cluster number.xls'];
-      output1 = {'frame','cluster number'};
-      output2 = [indexFrameToCal',numberCluster'];
-      xlswrite(clusterNumberDirectory,output1,1,'A1');
-      xlswrite(clusterNumberDirectory,output2,1,'A2');
-end
+% if doFindCluster == 1
+%       clusterNumberDirectory = [DataDirectory,'phi',num2str(phiInitial*100),'\cluster number.xls'];
+%       output1 = {'frame','cluster number'};
+%       output2 = [indexFrameToCal',numberCluster'];
+%       xlswrite(clusterNumberDirectory,output1,1,'A1');
+%       xlswrite(clusterNumberDirectory,output2,1,'A2');
+% end
+  
+   
 end 

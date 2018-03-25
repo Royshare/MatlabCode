@@ -56,7 +56,7 @@ clc
 close all
 particleSize = 125;  % unit: um
 gapThickness = 1.397; % unit: mm
-phiInitial = 0.31;
+phiInitial = 0.2;
 FlowRate = 150;      % unit: ml/min
 pixelUpperLimitDelete = 40; % image inside this circle will be removed.
 pixelLowerLimitDelete = 440;
@@ -84,15 +84,13 @@ imageAnalysis = ezsmoothn(double(imageGrayIntensity));
 image1 = imageAnalysis;
 [fx,fy] = gradient(image1);
 
-   binaryThreshold = graythresh(image1);
-   imageClusterBinary = imbinarize(image1,binaryThreshold);
-   figure
-   imshow(imageClusterBinary)
+figure; imshow(image1)
 
 imageOut = edge(image1,'canny');
 figure; imshow(imageOut)
 figure;imshow(fx)
 figure;imshow(fy)
+figure; imshow(fx.^2+fy.^2)
 end
 %% test perimeter of interface
 clear

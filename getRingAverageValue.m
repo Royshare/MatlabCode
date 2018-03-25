@@ -3,6 +3,7 @@
 
 function ringAverageData = getRingAverageValue(dataPolar,ringWidth)
    rPosition = dataPolar(:,1);
+   thetaPosition = dataPolar(:,2);
    physicalValue = dataPolar(:,3);
    ringStart = min(dataPolar(:,1));
    ringEnd = max(dataPolar(:,1));
@@ -14,9 +15,10 @@ function ringAverageData = getRingAverageValue(dataPolar,ringWidth)
         valueInRing = [];
         valueInRing = physicalValue(indexInRing);
         valueRingAverage(ringNum) = mean(valueInRing);
+        valueRingVar(ringNum) = var(valueInRing);
         ringLocation(ringNum) = (ringRangePixel(ringNum)+ringRangePixel(ringNum+1))/2;
    end
-   ringAverageData = [ringLocation',valueRingAverage'];
+   ringAverageData = [ringLocation',valueRingAverage',valueRingVar'];
    
 %    figure
 %    plot(ringLocation',valueRingAverage','*-')
