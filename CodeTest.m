@@ -1,3 +1,23 @@
+%%
+clear
+clc
+close all
+x = linspace(0,200,100);
+y = log(x)-1000*x-50*x.^-0.5;
+z = -x+100*log(x);
+figure;plot(x,y)
+figure;plot(x,z)
+%% 
+clear
+clc
+close all
+x = -20:0.2:20;
+k = 2;
+y = sin(k*x)/pi./x;
+figure; plot(x,y)
+k = 20;
+y = sin(k*x)/pi./x;
+figure; plot(x,y)
 %% 
 clear
 clc
@@ -8,7 +28,11 @@ ny=1000;ymin=-15;ymax=15;
 [x,y]=meshgrid(linspace(xmin,xmax,nx),linspace(ymin,ymax,ny));
 a = 3; h = 1;
 Q = 10;
-potentialfun = Q/4/pi*log((x.^2-a^2-h^2-y.^2+2*h*y)^2+4*x.^2*(y-h)^2);
+
+xx = x.^4-6*x.^2*y.^2+y.^4+2*(x.^2-y.^2)*(h^2-a^2)+a^4+2*a^2*h^2+h^4;
+yy = 4*x.*y*(x.^2-y.^2+h^2-a^2);
+potentialfun = Q/4/pi*log(xx.^2+yy.^2);
+% potentialfun = Q/4/pi*log((x.^2-a^2-h^2-y.^2+2*h*y)^2+4*x.^2*(y-h)^2);
 levmax=max(max(potentialfun));
 levmin=min(min(potentialfun));
 lev=linspace(levmin,levmax,100);
@@ -16,7 +40,8 @@ figure;
 contour(x,y,potentialfun,lev)
 title('Equipotential line of two source');
 
-streamfun = Q/2/pi*atan2(2*x.*(y-h),(x.^2-a^2-h^2-y^2+2*h*y));
+streamfun = Q/2/pi*atan2(yy,xx);
+% streamfun = Q/2/pi*atan2(2*x.*(y-h),(x.^2-a^2-h^2-y^2+2*h*y));
 lev1max=max(max(streamfun));
 lev1min=min(min(streamfun));
 lev1=linspace(lev1min,lev1max,100);
